@@ -1,19 +1,32 @@
-# ArcheTYPE Core (initial seed)
+# ArcheTYPE Core (Initial Seed)
 
-This folder contains the first-step implementation artifacts for ArcheTYPE, created by ArcheTYPE itself.
+Welcome to the foundational repository for **ArcheTYPE**—a self-optimizing, hybrid AI router and language model system.
 
-Files:
-- system_prompt.txt  : Combined SYSTEM persona and embedded uploaded README (source: /mnt/data/README.txt)
-- rules_engine.py    : Simple rule-based decision engine
-- archetype_cli.py   : Minimal CLI wrapper using the rules engine and a local deterministic responder
-- config.json        : Basic configuration referencing the uploaded README path
-- memory.json        : Seeded memory with initial user goals
+ArcheTYPE is designed to leverage the power of high-performance online APIs (the **Teacher**) while continuously improving efficient, local student models (the **Students**). This initial seed contains the first-step implementation artifacts, created by ArcheTYPE itself, setting the stage for autonomous development.
 
-How to run (Linux):
-1. cd /mnt/data/archetype_core
-2. python3 archetype_cli.py "I'm stuck on X"
-3. Inspect memory.json for last_interaction.
+## 🚀 The ArcheTYPE Vision
 
-Notes:
-- This is the first engineering step: a deterministic local core that enforces ArcheTYPE persona constraints.
-- Next step is LLM integration and wake-word hooking (Vosk/ORBIT was discarded per user).
+ArcheTYPE aims to achieve the **best of both worlds** in AI deployment:
+
+1.  **High-Fidelity Responses:** Utilizing a powerful online LLM (the Teacher) for complex, high-stakes, or novel queries.
+2.  **Low-Latency & Privacy:** Routing common, contextual, or constrained queries to highly optimized, local student models.
+3.  **Autonomous Improvement:** Using the Teacher's knowledge to perpetually distill, train, and refine the local Students, moving towards independent, efficient performance.
+
+## 🏗️ Core Architecture Overview
+
+The system operates as a **Smart Router** that dynamically delegates tasks and closes the loop on knowledge transfer. The architecture is detailed below:
+
+```mermaid
+graph TD
+    A[User] -->|Request| B(ArcheTYPE Router)
+    B -->|Complex/New| C(Online Adapter - Groq API)
+    B -->|Simple/Context| D(Local Adapter - llama.cpp)
+    C -->|Teacher Response| E[Online Model - Teacher]
+    D -->|Student Response| F[Local Students]
+    E --> G(Logger & Archive)
+    F --> G
+    G --> H(Distiller - Builds Dataset)
+    H --> I(Optional Trainer - LoRA / qLoRA)
+    I --> J[Updated Local Model Artifacts]
+    J --> D
+```
