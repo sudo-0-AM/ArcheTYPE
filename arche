@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# ArcheTYPE CLI launcher
+
+PROJ="$HOME/ArcheTYPE"
+VENV="$PROJ/venv"
+source "$VENV/bin/activate"
+
+# If user passed --offline
+if [[ "$1" == "--offline" ]]; then
+    shift
+    python3 - <<PY
+from router import archetype_respond
+print(archetype_respond("$*", force_offline=True))
+PY
+    exit 0
+fi
+
+# Default (auto-switch)
+python3 "$PROJ/router.py" "$@"

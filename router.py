@@ -48,8 +48,12 @@ def choose_engine():
 # -------------------------------------------------------
 # MAIN EXECUTION LOGIC
 # -------------------------------------------------------
-def archetype_respond(user_text, local_model="local_fast"):
-    engine = choose_engine()
+def archetype_respond(user_text,force_offline=False, local_model="local_fast"):
+    if force_offline:
+        engine = "local"
+    else:
+        engine = choose_engine()
+
     timestamp = int(time.time())
 
     if engine == "online":
