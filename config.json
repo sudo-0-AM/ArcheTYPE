@@ -1,0 +1,13 @@
+{
+  "persona_source": "/home/piyush/ArcheTYPE/system_prompt.txt",
+  "models": {
+    "local_fast": "~/ArcheTYPE/models/phi3_mini_q4.bin",
+    "local_deep": "~/ArcheTYPE/models/llama_8b_q4.bin"
+  },
+  "online_engine": "groq",
+  "online_api_env_var": "GROQ_API_KEY",
+  "log_dir": "~/ArcheTYPE/archetype_logs",
+  "distill_dir": "~/ArcheTYPE/distilled_dataset",
+  "faiss_index": "~/ArcheTYPE/faiss.index",
+  "wake_phrases": ["archetype", "shadow"]
+}
