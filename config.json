@@ -1,8 +1,7 @@
 {
-  "persona_source": "/home/piyush/ArcheTYPE/system_prompt.txt",
+  "persona_source": "~/ArcheTYPE/system_prompt.txt",
   "models": {
-    "local_fast": "~/ArcheTYPE/models/phi3_mini_q4.bin",
-    "local_deep": "~/ArcheTYPE/models/llama_8b_q4.bin"
+    "local_fast": "~/ArcheTYPE/models/Phi-3-mini-4k-instruct-gguf/Phi-3-mini-4k-instruct-q4.gguf"
   },
   "online_engine": "groq",
   "online_api_env_var": "GROQ_API_KEY",

@@ -1,38 +1,83 @@
 #!/usr/bin/env python3
-# router.py - choose backend, orchestrate calls, log interactions
-import os, json, time
+# router.py - auto-switch online/offline
+
+import os
+import json
+import time
+import socket
+from dotenv import load_dotenv
+from pathlib import Path
+
 from adapters.online_adapter import call_online_model
 from adapters.local_adapter import call_local_model
 from logger import log_interaction
-from pathlib import Path
-from dotenv import load_dotenv
 
 load_dotenv()
-CFG = json.load(open('config.json'))
+CFG = json.load(open("config.json"))
 
-def choose_engine(user_text, prefer_online=True):
-    # Tunable policy: if internet and prefer_online -> online teacher
-    if prefer_online and os.getenv(CFG['online_api_env_var']):
-        return 'online'
-    return 'local'
+# -------------------------------------------------------
+# INTERNET CHECK (NO PING — THIS ALWAYS WORKS)
+# -------------------------------------------------------
+def _internet_available():
+    try:
+        socket.create_connection(("api.groq.com", 443), timeout=1)
+        return True
+    except:
+        return False
 
-def archetype_respond(user_text, prefer_online=True, local_model='local_fast'):
-    engine = choose_engine(user_text, prefer_online=prefer_online)
+
+# -------------------------------------------------------
+# ENGINE SELECTION
+# -------------------------------------------------------
+def choose_engine():
+    api_key_name = CFG.get("online_api_env_var", "")
+    api_key = os.getenv(api_key_name)
+
+    # If Groq key isn't present → local only
+    if not api_key:
+        return "local"
+
+    # If internet works → use teacher model
+    if _internet_available():
+        return "online"
+
+    # Otherwise → offline LLM
+    return "local"
+
+
+# -------------------------------------------------------
+# MAIN EXECUTION LOGIC
+# -------------------------------------------------------
+def archetype_respond(user_text, local_model="local_fast"):
+    engine = choose_engine()
     timestamp = int(time.time())
-    if engine == 'online':
-        resp = call_online_model(user_text)
+
+    if engine == "online":
+        try:
+            resp = call_online_model(user_text)
+        except Exception:
+            print("[router] Online failed → using offline model.")
+            resp = call_local_model(user_text, model_key=local_model)
+            engine = "local"
     else:
         resp = call_local_model(user_text, model_key=local_model)
+
+    # Log response
     log_interaction({
-        'ts': timestamp,
-        'engine': engine,
-        'user': user_text,
-        'response': resp
+        "ts": timestamp,
+        "engine": engine,
+        "user": user_text,
+        "response": resp
     })
+
     return resp
 
-if __name__ == '__main__':
+
+# -------------------------------------------------------
+# CLI
+# -------------------------------------------------------
+if __name__ == "__main__":
     import sys
-    user_text = " ".join(sys.argv[1:]) if len(sys.argv)>1 else input("You: ")
-    ans = archetype_respond(user_text, prefer_online=True)
+    user_text = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else input("You: ")
+    ans = archetype_respond(user_text)
     print(ans)

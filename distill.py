@@ -16,7 +16,7 @@ def build_dataset():
                 user = e.get('user')
                 resp = e.get('response')
                 engine = e.get('engine')
-                if user and resp and engine == 'online':
+                if engine == 'online':
                     # keep only teacher examples
                     pairs.append({'prompt': user, 'response': resp})
             except:
@@ -25,7 +25,7 @@ def build_dataset():
     out = OUTDIR / "supervised_pairs.jsonl"
     with open(out, 'w', encoding='utf-8') as fh:
         for p in pairs:
-            fh.write(json.dumps(p, ensure_ascii=False) + "\\n")
+            fh.write(json.dumps(p, ensure_ascii=False) + "\n")
     print(f"Saved {len(pairs)} pairs to {out}")
 
 if __name__ == '__main__':

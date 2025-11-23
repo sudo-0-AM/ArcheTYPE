@@ -10,4 +10,4 @@ def log_interaction(entry):
     fname = LOGDIR / f"{ts}.jsonl"
     # append line
     with open(fname, 'a', encoding='utf-8') as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\\n")
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
