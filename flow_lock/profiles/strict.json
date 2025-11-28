@@ -1,0 +1,10 @@
+{
+  "name": "strict",
+  "blacklist": ["discord", "spotify", "steam", "brave-browser", "chrome", "firefox", "whatsapp"],
+  "whitelist": ["code", "konsole", "python3"],
+  "idle_limit_minutes": 3,
+  "kill_immediate": true,
+  "correction": true,
+  "score_reward": 2,
+  "score_penalty": 10
+}

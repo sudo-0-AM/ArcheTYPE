@@ -1,0 +1,9 @@
+{
+    "mode": "strict",
+    "idle_limit_minutes": 5,
+    "kill_distracting_immediately": true,
+    "block_spawn": true,
+    "correction_on_violation": true,
+    "score_reward_per_min": 1,
+    "score_penalty_per_violation": 5
+}

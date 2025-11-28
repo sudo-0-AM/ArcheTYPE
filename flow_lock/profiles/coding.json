@@ -1,0 +1,10 @@
+{
+  "name": "coding",
+  "blacklist": ["discord", "spotify", "steam", "whatsapp"],
+  "whitelist": ["code", "pycharm", "nvim", "konsole"],
+  "idle_limit_minutes": 10,
+  "kill_immediate": true,
+  "correction": true,
+  "score_reward": 1,
+  "score_penalty": 5
+}
