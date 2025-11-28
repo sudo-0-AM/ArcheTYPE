@@ -11,6 +11,7 @@ from pathlib import Path
 from adapters.online_adapter import call_online_model
 from adapters.local_adapter import call_local_model
 from logger import log_interaction
+from engine.comand_mode import try_parse_command
 
 load_dotenv()
 CFG = json.load(open("config.json"))
@@ -49,6 +50,16 @@ def choose_engine():
 # MAIN EXECUTION LOGIC
 # -------------------------------------------------------
 def archetype_respond(user_text,force_offline=False, local_model="local_fast"):
+    
+    # ----------------------------------------
+    # COMMAND MODE: intercept special commands
+    # ----------------------------------------
+    cmd = try_parse_command(user_text)
+    if cmd:
+        return cmd
+    
+    # Normal online/offline routing
+    # ----------------------------------------
     if force_offline:
         engine = "local"
     else:

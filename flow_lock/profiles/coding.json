@@ -1,7 +1,7 @@
 {
   "name": "coding",
   "blacklist": ["discord", "spotify", "steam", "whatsapp"],
-  "whitelist": ["code", "pycharm", "nvim", "konsole"],
+  "whitelist": ["code", "pycharm", "nvim", "konsole", "firefox", "chrome", "brave-browser"],
   "idle_limit_minutes": 10,
   "kill_immediate": true,
   "correction": true,

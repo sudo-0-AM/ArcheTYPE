@@ -1,105 +1,132 @@
 #!/usr/bin/env python3
-import json
-import time
-import psutil
-import os
-import subprocess
-from datetime import datetime
-import sys
+import os, sys, time, json, psutil, subprocess, traceback
+from datetime import datetime, date
 
+# Ensure root import
 ROOT = os.path.expanduser("~/ArcheTYPE")
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
+
 from router import archetype_respond
 
 BASE = os.path.expanduser("~/ArcheTYPE/flow_lock")
-LOG_FILE = os.path.join(BASE, "flow_lock.log")
+STATE = os.path.join(BASE, "state.json")
+PROFILES_DIR = os.path.join(BASE, "profiles")
+LOG = os.path.join(BASE, "flow_lock.log")
+CHECK_INTERVAL = 3
 
 def log(msg):
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"{datetime.now().isoformat()} {msg}\n")
-    print(msg)
+    line = f"{datetime.now().isoformat()} {msg}"
+    print(line)
+    with open(LOG, "a") as f:
+        f.write(line + "\n")
 
-def load_json(name):
-    path = os.path.join(BASE, name)
+def read_json(path):
     try:
         return json.load(open(path))
     except:
-        return []
+        return None
 
-def notify(title, body):
-    subprocess.Popen(["notify-send", title, body])
+def read_state():
+    st = read_json(STATE)
+    if not st:
+        st = {
+            "lock_enabled": False,
+            "current_profile": "strict",
+            "daily_score": 0,
+            "last_score_date": str(date.today())
+        }
+    return st
 
-def kill_process(pid):
-    try:
-        psutil.Process(pid).kill()
-    except:
-        pass
+def write_state(st):
+    json.dump(st, open(STATE, "w"), indent=2)
+
+def load_profile(name):
+    p = os.path.join(PROFILES_DIR, f"{name}.json")
+    return read_json(p) or {}
 
 def get_idle_ms():
-    """Wayland KDE idle time via KWin's IdleTime interface."""
     try:
         import dbus
         bus = dbus.SessionBus()
         obj = bus.get_object("org.kde.KWin", "/org/kde/KWin/IdleTime")
         props = dbus.Interface(obj, "org.freedesktop.DBus.Properties")
-        idle = props.Get("org.kde.KWin.IdleTime", "IdleTime")
-        return int(idle)
-    except Exception:
+        return int(props.Get("org.kde.KWin.IdleTime", "IdleTime"))
+    except:
         return 0
 
+def add_score(st, amount):
+    today = str(date.today())
+    if st["last_score_date"] != today:
+        st["last_score_date"] = today
+        st["daily_score"] = 0
+    st["daily_score"] += amount
+    write_state(st)
+    log(f"Score +{amount:.2f} (total={st['daily_score']:.2f})")
 
-def flow_lock_loop():
-    log("Flow Lock Mode ACTIVE.")
-    blacklist = load_json("blacklist.json")
-    whitelist = load_json("whitelist.json")
-    policy = load_json("policy.json")
+def enforce(profile):
+    bl = [x.lower() for x in profile.get("blacklist", [])]
+    wl = [x.lower() for x in profile.get("whitelist", [])]
+    violations = []
+    for p in psutil.process_iter(["name", "cmdline", "pid"]):
+        name = (p.info["name"] or "").lower()
+        cmd = " ".join(p.info["cmdline"] or []).lower()
+        if not name:
+            continue
+        if any(w in name or w in cmd for w in wl):
+            continue
+        if any(b in name or b in cmd for b in bl):
+            violations.append((name, p.pid))
+            try:
+                p.kill()
+            except:
+                pass
+    return violations
+
+def flow_lock():
+    log("Flow Lock daemon starting.")
+    last_profile = None
 
     while True:
-        try:
-            # 1. Idle detection
-            idle_ms = get_idle_ms()
-            if idle_ms >= policy["idle_limit_minutes"] * 60 * 1000:
-                if policy["correction_on_violation"]:
-                    resp = archetype_respond(
-                        f"I am idle for {policy['idle_limit_minutes']} minutes.",
-                    )
-                    log("IDLE Correction: " + resp.replace("\n", " | "))
-                notify("ArcheTYPE — Idle", "Wake up.")
-                time.sleep(20)
-                continue
+        st = read_state()
+        if not st.get("lock_enabled"):
+            time.sleep(CHECK_INTERVAL)
+            continue
 
-            # 2. Process scan
-            for proc in psutil.process_iter(attrs=["pid", "name", "cmdline"]):
-                name = proc.info["name"].lower()
+        profname = st.get("current_profile", "strict")
+        if profname != last_profile:
+            log(f"Using profile: {profname}")
+            last_profile = profname
 
-                # Skip whitelisted
-                if any(wl in name for wl in whitelist):
-                    continue
+        profile = load_profile(profname)
 
-                # Check blacklist
-                if any(bl in name for bl in blacklist):
-                    log(f"VIOLATION: {name} (pid={proc.pid}) → killed")
+        # Idle
+        idle_ms = get_idle_ms()
+        limit = profile.get("idle_limit_minutes", 10)
+        if idle_ms >= limit * 60000:
+            log("Idle detected")
+            resp = archetype_respond(f"Idle for {limit} minutes under profile {profname}.")
+            log("Correction: " + resp)
+            time.sleep(20)
+            continue
 
-                    if policy["kill_distracting_immediately"]:
-                        kill_process(proc.pid)
-
-                    notify("ArcheTYPE Flow Lock", f"Blocked: {name}")
-
-                    if policy["correction_on_violation"]:
-                        resp = archetype_respond(
-                            f"I attempted to open {name} during flow lock."
-                        )
-                        log("Correction: " + resp.replace("\n", " | "))
-
+        # Violations
+        vio = enforce(profile)
+        if vio:
+            for name, pid in vio:
+                log(f"Violation: {name} (pid={pid})")
+                resp = archetype_respond(f"Tried opening {name}.")
+                log("Correction: " + resp)
+                st = read_state()
+                add_score(st, -abs(profile.get("score_penalty", 10)))
             time.sleep(3)
+            continue
 
-        except KeyboardInterrupt:
-            log("Flow Lock stopped by user.")
-            break
-        except Exception as e:
-            log(f"ERROR: {e}")
-            time.sleep(3)
+        # Reward
+        st = read_state()
+        reward = profile.get("score_reward", 5)
+        add_score(st, reward * (CHECK_INTERVAL / 60))
+        time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
-    flow_lock_loop()
+    flow_lock()
