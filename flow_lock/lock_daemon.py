@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, time, json, psutil, subprocess, traceback
+import os, sys, time, json, psutil, subprocess
 from datetime import datetime, date
 
 # Ensure root import
@@ -57,12 +57,23 @@ def get_idle_ms():
 
 def add_score(st, amount):
     today = str(date.today())
-    if st["last_score_date"] != today:
+
+    # daily reset
+    if st.get("last_score_date") != today:
         st["last_score_date"] = today
         st["daily_score"] = 0
+
+    # update score
     st["daily_score"] += amount
+    # XP gain (always positive)
+    xp_gain = max(amount, 0)
+    st["total_xp"] = st.get("total_xp", 0) + xp_gain
+    # Level formula
+    st["level"] = int((st["total_xp"] ** 0.5) * 2.5)
+
     write_state(st)
-    log(f"Score +{amount:.2f} (total={st['daily_score']:.2f})")
+    log(f"Score +{amount:.2f} (total={st['daily_score']:.2f}), XP +{xp_gain:.2f}, Level={st['level']}")
+
 
 def enforce(profile):
     bl = [x.lower() for x in profile.get("blacklist", [])]
@@ -83,9 +94,19 @@ def enforce(profile):
                 pass
     return violations
 
+def notify(title, body):
+    try:
+        subprocess.Popen(["notify-send", title, body])
+    except:
+        pass
+
+
 def flow_lock():
     log("Flow Lock daemon starting.")
     last_profile = None
+    last_notification = 0
+    NOTIFY_INTERVAL = 20 * 60  # 20 minutes
+
 
     while True:
         st = read_state()
@@ -127,6 +148,19 @@ def flow_lock():
         reward = profile.get("score_reward", 5)
         add_score(st, reward * (CHECK_INTERVAL / 60))
         time.sleep(CHECK_INTERVAL)
+
+        # Notification every 20 minutes
+        now = time.time()
+        if now - last_notification >= NOTIFY_INTERVAL:
+            st2 = read_state()
+            level = st2.get("level", 0)
+            xp = round(st2.get("total_xp", 0), 2)
+            score = round(st2.get("daily_score", 0), 2)
+
+            notify("FlowScore Update",
+                f"Level: F{level} | XP: {xp} | Score: {score}\nStay aligned.")
+            last_notification = now
+
 
 if __name__ == "__main__":
     flow_lock()

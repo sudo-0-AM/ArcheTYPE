@@ -24,14 +24,23 @@ def get_daily_score():
         return 0
 
 def score_dashboard():
-    score = get_daily_score()
-    # Simple ASCII bar
-    bars = int(min(max(score, 0), 40) // 2)
+    try:
+        st = json.load(open(STATE))
+    except:
+        return "FlowScore unavailable."
+
+    score = round(st.get("daily_score", 0), 2)
+    xp = round(st.get("total_xp", 0), 2)
+    level = st.get("level", 0)
+
+    bars = int(min(level, 40))  # Level bar
     bar_graph = "█" * bars + "░" * (40 - bars)
 
-    out = (
+    return (
         f"FlowScore ({date.today()})\n"
-        f"Score: {score}\n"
-        f"[{bar_graph}]"
+        f"Daily Score: {score}\n"
+        f"XP: {xp}\n"
+        f"Level: F{level}\n"
+        f"[{bar_graph}]\n"
     )
-    return out
+
