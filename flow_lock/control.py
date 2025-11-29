@@ -14,6 +14,7 @@ Python API:
 
 import os
 import sys
+import subprocess
 import json
 from datetime import datetime
 
@@ -80,18 +81,17 @@ def set_profile(profile_name: str):
     write_state(state)
     log(f"Profile changed -> {profile_name}")
 
-    # NEW: trigger ArcheTYPE intent system when profile changes
+    # Force venv Python
+    VENV_PY = os.path.expanduser("~/ArcheTYPE/venv/bin/python3")
+    INTENT = os.path.expanduser("~/ArcheTYPE/archetype_intent.py")
+
     try:
-        import subprocess
-        subprocess.Popen([
-            "/usr/bin/python3",
-            os.path.expanduser("~/ArcheTYPE/archetype_intent.py"),
-            f"prepare {profile_name} mode"
-        ])
+        subprocess.Popen([VENV_PY, INTENT, f"prepare {profile_name} mode"])
     except Exception as e:
         log(f"[intent error] {e}")
 
     return state
+
 
 
 def get_status():

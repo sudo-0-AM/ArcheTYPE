@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/llama.cpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/models/Phi-3-mini-4k-instruct-gguf" vcs="Git" />
-  </component>
-</project>
