@@ -1,0 +1,22 @@
+{
+    "idle_limit_minutes": 4,
+
+    "blacklist": [
+        "youtube", "tiktok", "whatsapp", "instagram", "discord",
+        "steam", "games", "spotify", "vlc", "music", "gallery",
+        "libreoffice", "chromium", "telegram", "settings", "firefox"
+    ],
+
+    "whitelist": [
+        "code", "pycharm", "nvim", "konsole", "python3",
+        "cursor", "obsidian"
+    ],
+
+    "score_reward": 10,
+    "score_penalty": 30,
+
+    "score_reward_mult": 2.5,
+    "score_penalty_mult": 4.0,
+
+    "xp_mult": 5.0
+}

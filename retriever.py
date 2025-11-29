@@ -2,7 +2,7 @@
 from sentence_transformers import SentenceTransformer
 import faiss, numpy as np, json, os
 from pathlib import Path
-CFG = json.load(open('config.json'))
+CFG = json.load(open('/home/piyush/ArcheTYPE/config.json'))
 OUTDIR = Path(os.path.expanduser(CFG['distill_dir']))
 model = SentenceTransformer('all-MiniLM-L6-v2')  # small CPU-friendly
 

@@ -21,7 +21,7 @@ def decide_mode(text, context=None):
     text_l = text.lower()
     if any(w in text_l for w in ["summon archetype", "wake archetype", "archetype", "voice archetype"]) and len(text_l.split()) < 10:
         return "voice"
-    if detect_drift(text) or any(w in text_l for w in ["help", "motivat", "stuck", "blocked"]):
+    if detect_drift(text) or any(w in text_l for w in ["help", "motivate", "stuck", "blocked"]):
         return "text"
     # default to text to be safely responsive
     return "text"

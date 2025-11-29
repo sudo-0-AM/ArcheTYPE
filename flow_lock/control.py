@@ -25,10 +25,24 @@ def _ensure_dirs():
     os.makedirs(BASE, exist_ok=True)
     if not os.path.exists(STATE_PATH):
         default = {
-            "lock_enabled": False,
-            "current_profile": "strict",
-            "daily_score": 0,
-            "last_update": 0
+            "idle_limit_minutes": 15,
+
+            "blacklist": [
+                "youtube", "tiktok", "instagram", "steam",
+                "vlc", "music", "games"
+            ],
+
+            "whitelist": [
+                "firefox", "code", "konsole", "journal", "notes", "okular"
+            ],
+
+            "score_reward": 3,
+            "score_penalty": 5,
+
+            "score_reward_mult": 0.8,
+            "score_penalty_mult": 1.0,
+
+            "xp_mult": 1.0
         }
         with open(STATE_PATH, "w", encoding="utf-8") as fh:
             json.dump(default, fh, indent=2)
@@ -59,12 +73,26 @@ def set_lock(enabled: bool):
     log(f"Flow Lock set to {'ON' if enabled else 'OFF'}")
     return state
 
+# ---- Public API ----
 def set_profile(profile_name: str):
     state = read_state()
     state["current_profile"] = profile_name
     write_state(state)
     log(f"Profile changed -> {profile_name}")
+
+    # NEW: trigger ArcheTYPE intent system when profile changes
+    try:
+        import subprocess
+        subprocess.Popen([
+            "/usr/bin/python3",
+            os.path.expanduser("~/ArcheTYPE/archetype_intent.py"),
+            f"prepare {profile_name} mode"
+        ])
+    except Exception as e:
+        log(f"[intent error] {e}")
+
     return state
+
 
 def get_status():
     st = read_state()
@@ -102,7 +130,7 @@ def main(argv):
         st = set_profile(name)
         print("OK")
     elif sub == "score":
-        from flow_lock.score_dashboard import score_dashboard
+        from score_dashboard import score_dashboard
         print(score_dashboard())
         return
     else:

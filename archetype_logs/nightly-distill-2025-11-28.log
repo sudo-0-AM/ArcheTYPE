@@ -1,7 +1,0 @@
-=== ArcheTYPE nightly distill started: 2025-11-28T00:05:55+05:30 ===
-Persona present at /home/piyush/ArcheTYPE/system_prompt.txt
-Running distill.py ...
-Saved 13 pairs to /home/piyush/ArcheTYPE/distilled_dataset/supervised_pairs.jsonl
-Running retriever.py ...
-=== ArcheTYPE nightly distill finished: 2025-11-28T00:06:07+05:30 ===
-

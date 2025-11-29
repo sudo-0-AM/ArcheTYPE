@@ -1,1 +1,0 @@
-{"ts": 1764307062, "engine": "online", "user": "I attempted to open firefox-esr during flow lock.", "response": "DIAGNOSIS: Drift detected. Flow lock compromised by external action.\n\nACTION: Re-establish flow lock by closing all non-essential applications and refocusing on the primary task.\n\nMETRIC: Re-lock flow within 5 minutes to maintain momentum."}

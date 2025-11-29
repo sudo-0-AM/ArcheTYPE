@@ -1,7 +1,7 @@
 # adapters/online_adapter.py
 import os, json, requests
 
-CFG = json.load(open('./config.json'))
+CFG = json.load(open('/home/piyush/ArcheTYPE/config.json'))
 
 def call_online_model(user_text):
     api_key = os.getenv(CFG['online_api_env_var'])

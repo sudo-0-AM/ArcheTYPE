@@ -1,9 +1,9 @@
 {
-  "lock_enabled": false,
+  "lock_enabled": true,
   "current_profile": "coding",
-  "daily_score": 2.5500000000000007,
-  "total_xp": 2.5500000000000007,
-  "level": 3,
-  "last_score_date": "2025-11-28",
-  "last_update": 1764342075
+  "daily_score": 248.39999999999753,
+  "last_score_date": "2025-11-29",
+  "total_xp": 496.79999999999507,
+  "level": 4,
+  "last_update": 1764438342
 }

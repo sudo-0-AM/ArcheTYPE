@@ -14,7 +14,7 @@ from logger import log_interaction
 from engine.comand_mode import try_parse_command
 
 load_dotenv()
-CFG = json.load(open("config.json"))
+CFG = json.load(open("/home/piyush/ArcheTYPE/config.json"))
 
 # -------------------------------------------------------
 # INTERNET CHECK (NO PING — THIS ALWAYS WORKS)

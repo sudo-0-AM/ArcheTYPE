@@ -19,8 +19,8 @@ def execute_action(action):
 
     elif t == "terminal":
         cmd = action["command"]
-        full = f'"{cmd}"'
-        run_cmd(full)
+        run_cmd(cmd)
+
 
     elif t == "browser_tabs":
         tabs = action["tabs"]

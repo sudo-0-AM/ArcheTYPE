@@ -1,10 +1,22 @@
 {
-  "name": "strict",
-  "blacklist": ["discord", "spotify", "steam", "brave-browser", "chrome", "firefox", "whatsapp"],
-  "whitelist": ["code", "konsole", "python3"],
-  "idle_limit_minutes": 3,
-  "kill_immediate": true,
-  "correction": true,
-  "score_reward": 2,
-  "score_penalty": 10
+    "idle_limit_minutes": 5,
+
+    "blacklist": [
+        "youtube", "tiktok", "whatsapp", "instagram", "discord",
+        "steam", "spotify", "gallery", "image", "games", "mpv",
+        "vlc", "music", "chrome", "firefox"
+    ],
+
+    "whitelist": [
+        "code", "vscode", "pycharm", "nvim", "vim",
+        "konsole", "kitty", "python3", "firefox --private-window"
+    ],
+
+    "score_reward": 8,
+    "score_penalty": 25,
+
+    "score_reward_mult": 2.0,
+    "score_penalty_mult": 3.5,
+
+    "xp_mult": 4.0
 }

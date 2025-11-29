@@ -1,7 +1,7 @@
 # distill.py
 import json, os, glob
 from pathlib import Path
-CFG = json.load(open('config.json'))
+CFG = json.load(open('/home/piyush/ArcheTYPE/config.json'))
 LOGDIR = Path(os.path.expanduser(CFG['log_dir']))
 OUTDIR = Path(os.path.expanduser(CFG['distill_dir']))
 OUTDIR.mkdir(parents=True, exist_ok=True)

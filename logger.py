@@ -1,7 +1,7 @@
 # logger.py
 import json, os, time
 from pathlib import Path
-CFG = json.load(open('config.json'))
+CFG = json.load(open('/home/piyush/ArcheTYPE/config.json'))
 LOGDIR = Path(os.path.expanduser(CFG['log_dir']))
 LOGDIR.mkdir(parents=True, exist_ok=True)
 

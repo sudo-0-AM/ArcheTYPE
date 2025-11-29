@@ -1,0 +1,27 @@
+{
+  "name": "linux",
+  "description": "Initialize the Linux learning and hacking environment",
+  "actions": [
+    {
+      "type": "terminal",
+      "command": "konsole --workdir ~/MyFolder/Linux"
+    },
+    {
+      "type": "terminal",
+      "command": "konsole -e bash -c \"cmatrix; exec bash\""
+    },
+    {
+      "type": "browser_tabs",
+      "tabs": [
+        "https://linuxcommand.org/lc3_learning_the_shell.php",
+        "https://explainshell.com/",
+        "https://overthewire.org/wargames/bandit/",
+        "https://chatgpt.com/"
+      ]
+    },
+    {
+      "type": "notification",
+      "message": "Linux environment engaged. Break the system. Learn everything."
+    }
+  ]
+}

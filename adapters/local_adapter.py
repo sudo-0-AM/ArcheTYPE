@@ -14,13 +14,11 @@ import subprocess
 from pathlib import Path
 
 # Load config
-CFG = json.load(open("config.json"))
-
-# Persona file fallback
-FALLBACK_PERSONA = "/mnt/data/README.txt"
+CFG = json.load(open("/home/piyush/ArcheTYPE/config.json"))
 
 # Use llama-run for raw generation
-BINARY = Path("llama.cpp/build/bin/llama-run")
+BINARY = Path(os.path.expanduser("~/ArcheTYPE/llama.cpp/build/bin/llama-run"))
+
 
 # Distillation / retrieval files
 DISTILL_DIR = os.path.expanduser(CFG.get("distill_dir"))
@@ -106,10 +104,7 @@ def call_local_model(user_text, model_key="local_fast"):
         return f"[local adapter] Model not found: {model_path}"
 
     # Load persona
-    persona_src = os.path.expanduser(CFG.get("persona_source") or FALLBACK_PERSONA)
-    if not os.path.exists(persona_src) and os.path.exists(FALLBACK_PERSONA):
-        persona_src = FALLBACK_PERSONA
-
+    persona_src = os.path.expanduser(CFG.get("persona_source"))
     try:
         persona = open(persona_src, "r", encoding="utf-8").read()
     except Exception as e:
@@ -124,7 +119,7 @@ def call_local_model(user_text, model_key="local_fast"):
     # Run llama-run
     cmd = (
         f"{shlex.quote(str(BINARY))} "
-        f"--threads 12 "
+        f"--threads 10"
         f"--temp 0.2 "
         f"{shlex.quote(model_path)} "
         f"{shlex.quote(prompt)}"
