@@ -1,1 +1,51 @@
-<paste above .gitignore>
+# =========================================
+# PYTHON BUILD + CACHE
+# =========================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Byte-compiled log files & temp caches
+*.log
+.mypy_cache/
+.pytest_cache/
+*.sqlite3
+
+# =========================================
+# VIRTUAL ENVIRONMENTS (Highly Recommended)
+# =========================================
+venv/
+env/
+ENV/
+.venv/
+
+# =========================================
+# DATA / GENERATED OUTPUT / CORPUS / TEMP
+# =========================================
+distilled_dataset/
+archetype_logs/
+*.jsonl
+*.json
+
+# If these JSONL files are needed to reproduce training,
+# consider keeping them OR commit only a sample subset.
+
+# =========================================
+# EDITORS / SYSTEM FILES
+# =========================================
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# =========================================
+# MODEL CHECKPOINTS / GENERATED MODELS
+# =========================================
+models/
+checkpoints/
+*.pt
+*.bin
+*.ckpt
+
+# Useful later — they tend to be *huge*.
