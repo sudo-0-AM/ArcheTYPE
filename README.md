@@ -1,15 +1,14 @@
 
+<p align="center">
+  <img src="./assets/logo.svg" >
+</p>
+
 ---
 
 # 🎭 **ArcheTYPE — Your Personal OS-Level AI Shadow**
 
 ### *A self-evolving, hybrid (online + offline), system-integrated AI designed to enforce discipline, optimize flow, and evolve alongside the user.*
 
----
-
-<p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/OOjs_UI_icon_robot.svg/512px-OOjs_UI_icon_robot.svg.png" width="120">
-</p>
 
 ---
 

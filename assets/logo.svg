@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="600" height="600" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ArcheTYPE logo">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- dark rounded badge -->
+  <rect x="40" y="40" width="520" height="520" rx="80" fill="url(#g1)" />
+
+  <!-- inner glyph: stylized eye + upward chevron (shadow + ascent) -->
+  <g transform="translate(300,300)">
+    <!-- outer eye -->
+    <path d="M-220,0 C-120,-120 120,-120 220,0 C120,120 -120,120 -220,0 Z" fill="#0b1220" opacity="0.85" />
+    <!-- iris -->
+    <circle cx="0" cy="0" r="84" fill="#0ea5a6" />
+    <!-- pupil -->
+    <circle cx="0" cy="-12" r="34" fill="#071126" />
+    <!-- upward chevron -->
+    <path d="M-58,70 L0, -60 L58,70 L30,70 L0,10 L-30,70 Z" fill="#f8fafc" opacity="0.95" />
+  </g>
+
+  <!-- text -->
+  <g transform="translate(300,520)" text-anchor="middle" fill="#e6eef2" font-family="Inter, Arial, sans-serif">
+    <text x="0" y="0" font-size="34" font-weight="700">ArcheTYPE</text>
+    <text x="0" y="28" font-size="12" opacity="0.8">Personal discipline • Shadow AI • Flow enforcement</text>
+  </g>
+</svg>

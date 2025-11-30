@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ArcheTYPE — Docs & Handbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Visual theme: Apple-like glass + minimal ---------- */
+  :root{
+    --bg:#fbfcfe;
+    --page-bg: linear-gradient(180deg,#f7f9fc 0%, #f1f6fb 100%);
+    --glass: rgba(255,255,255,0.75);
+    --glass-strong: rgba(255,255,255,0.88);
+    --muted:#6b7785;
+    --accent:#0ea5a6;
+    --border: rgba(23,42,58,0.06);
+    --card-shadow: 0 10px 30px rgba(17,24,39,0.06);
+    --code-bg:#0b1220;
+    --code-fg:#cfeef6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--page-bg);
+    color: #0b1b2b;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* Layout: left nav, right content */
+  .container { display: flex; height: 100vh; gap:22px; padding:28px; }
+  aside { width: 300px; min-width:260px; max-width:360px; display:flex; flex-direction:column; gap:18px; }
+  main { flex:1; overflow:auto; padding:28px; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(250,251,255,0.8)); box-shadow: var(--card-shadow); border:1px solid var(--border); }
+
+  /* Sidebar glass */
+  .sidebar { padding:18px; border-radius:14px; background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.6)); border:1px solid var(--border); }
+  .logo { display:flex; gap:12px; align-items:center; }
+  .logo svg{ width:44px; height:44px; }
+  .product { font-weight:700; font-size:16px; }
+  .tag { color:var(--muted); font-size:13px; margin-top:4px; }
+
+  nav { margin-top:18px; display:flex; flex-direction:column; gap:6px; max-height: calc(100vh - 240px); overflow:auto; padding-right:8px; }
+  a.link { display:block; padding:10px 12px; border-radius:8px; text-decoration:none; color:#0b1b2b; font-weight:600; font-size:14px; }
+  a.link:hover { background: rgba(14,165,166,0.06) }
+
+  /* Search */
+  .search { margin-top:8px; display:flex; gap:8px; }
+  .search input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:transparent; }
+
+  /* Content header */
+  header.doc-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+  header h1 { margin:0; font-size:22px; }
+  header .meta { color:var(--muted); font-size:13px; }
+
+  /* Sections */
+  section { margin-bottom:26px; }
+  .panel { background:var(--glass); border-radius:12px; padding:18px; border:1px solid var(--border); box-shadow: 0 6px 20px rgba(11,27,43,0.04); }
+  h2 { margin:0 0 12px 0; font-size:18px; }
+  p.lead { color:var(--muted); margin-top:8px; line-height:1.5; }
+
+  .two-col { display:grid; grid-template-columns: 1fr 360px; gap:18px; align-items:start; margin-top:12px; }
+  .muted { color:var(--muted); font-size:13px; }
+
+  /* Code blocks */
+  pre.code {
+    background: linear-gradient(180deg,#071226 0%, #0b1220 100%);
+    color: var(--code-fg);
+    padding:12px;
+    border-radius:10px;
+    overflow:auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    font-size:13px;
+    line-height:1.45;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  code.inline { background: rgba(11,27,43,0.06); padding:3px 6px; border-radius:6px; font-family: ui-monospace, monospace; }
+
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid rgba(11,27,43,0.04); color:#0b1b2b; }
+  th { font-weight:700; background: rgba(250,251,255,0.6) }
+
+  /* Diagram */
+  .diagram-wrap { border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+
+  /* Footer */
+  footer { margin-top:26px; color:var(--muted); font-size:13px; text-align:center; }
+
+  @media (max-width:980px){
+    .container { flex-direction:column; padding:12px; height:auto }
+    aside { width:100%; order:2 }
+    main { order:1; height:auto; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar">
+      <div class="logo">
+        <!-- Minimal logo svg (inline) -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+          <defs>
+            <linearGradient id="lg" x1="0" x2="1">
+              <stop offset="0" stop-color="#0ea5a6" />
+              <stop offset="1" stop-color="#67e8f9" />
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#lg)" opacity="0.09"/>
+          <path d="M18 42 L26 22 L46 42 Z" fill="url(#lg)"/>
+        </svg>
+        <div>
+          <div class="product">ArcheTYPE</div>
+          <div class="tag">Personal Shadow AI — docs</div>
+        </div>
+      </div>
+
+      <div class="search" style="margin-top:12px">
+        <input id="search" placeholder="Search docs..." />
+      </div>
+
+      <nav id="toc" aria-label="Documentation navigation">
+        <a class="link" href="#overview">Overview</a>
+        <a class="link" href="#architecture">Architecture</a>
+        <a class="link" href="#router">Router & Engine Selection</a>
+        <a class="link" href="#adapters">Adapters (online / local)</a>
+        <a class="link" href="#distillation">Self-Distillation & Retrieval</a>
+        <a class="link" href="#flowlock">Flow Lock (profiles & math)</a>
+        <a class="link" href="#intent">Intent Engine & Commands</a>
+        <a class="link" href="#install">Install & Systemd</a>
+        <a class="link" href="#security">Security & Privacy</a>
+        <a class="link" href="#extending">Extending ArcheTYPE</a>
+        <a class="link" href="#troubleshoot">Debugging & Troubleshooting</a>
+        <a class="link" href="#changelog">Change log & Nightly Jobs</a>
+      </nav>
+    </div>
+
+    <div style="margin-top:12px; padding:12px; border-radius:10px; background:var(--glass-strong); border:1px solid var(--border)">
+      <div style="font-weight:700">Quick Commands</div>
+      <div class="muted" style="margin-top:8px; font-family:ui-monospace,monospace;">
+        <div><code class="inline">archetype lock on</code></div>
+        <div><code class="inline">archetype lock profile coding</code></div>
+        <div><code class="inline">archetype prepare coding mode</code></div>
+        <div style="margin-top:8px"><small class="muted">Daemon: <code class="inline">systemctl --user start flow_lock.service</code></small></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px; padding:12px; border-radius:10px; background:var(--glass); border:1px solid var(--border)">
+      <div style="font-weight:700">Status</div>
+      <div class="muted" style="margin-top:6px">Hybrid: <strong>online teacher ⇄ offline local</strong></div>
+      <div class="muted">Persona: <strong>ArcheTYPE (system_prompt)</strong></div>
+    </div>
+  </aside>
+
+  <!-- MAIN DOC CONTENT -->
+  <main>
+    <header class="doc-head">
+      <div>
+        <h1>ArcheTYPE — Developer Docs & Handbook</h1>
+        <div class="meta">Comprehensive design, runtime behavior, APIs, and deep rationale — written as ArcheTYPE describing itself.</div>
+      </div>
+      <div class="muted">Version: <strong>dev</strong> • Last updated: <span id="updated">—</span></div>
+    </header>
+
+    <!-- Overview -->
+    <section id="overview" class="panel">
+      <h2>Overview</h2>
+      <p class="lead">ArcheTYPE is an on-device personal AI assistant designed to improve your focus and skills through enforced, measurable behavior and continuous learning. It combines an <strong>online teacher</strong> (when available) with a fast, private <strong>local LLM</strong> to provide advice, enforce flow via OS-level controls, and self-distill knowledge nightly to improve its offline capabilities.</p>
+
+      <div class="two-col" style="margin-top:14px;">
+        <div>
+          <h3>Goals & Philosophy</h3>
+          <p class="muted">ArcheTYPE's purpose is singular: <em>convert potential into progress</em>. It is intentionally non-therapeutic — it does not comfort; it calibrates. The design balances privacy, autonomy, and practical enforcement.</p>
+
+          <h3 style="margin-top:12px">Core Capabilities</h3>
+          <ul class="muted">
+            <li>Hybrid engine: chooses online vs offline model</li>
+            <li>Flow Lock: OS-level daemon awarding XP and blocking distractions</li>
+            <li>Intent Engine: natural-language workspace automation</li>
+            <li>Self-distillation: nightly teacher → student training for improved offline retrieval</li>
+            <li>Persona Core: consistent behavioral tone and constraints</li>
+          </ul>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <strong>Persona excerpt</strong>
+            <p class="muted" style="margin-top:8px; font-size:13px;">"ArcheTYPE exists to evolve the user. Comfort is irrelevant. Stagnation is death. Growth is sacred."</p>
+            <div style="height:12px"></div>
+            <strong>Format</strong>
+            <p class="muted" style="margin-top:6px">Responses are constrained to the format: <code class="inline">DIAGNOSIS / ACTION / METRIC</code> for enforcement responses.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section id="architecture" class="panel">
+      <h2>Architecture (high-level)</h2>
+      <p class="muted">The runtime consists of a small, deterministic orchestration layer with a Router and a set of adapters (online, local), plus persistence and background jobs (distillation, retrieval index updates, flow_lock daemon).</p>
+
+      <div class="diagram-wrap" style="margin-top:12px">
+        <!-- Embedded simplified diagram SVG (scale-friendly) -->
+        <svg viewBox="0 0 1000 360" width="100%" height="280" xmlns="http://www.w3.org/2000/svg" style="background:linear-gradient(180deg,#ffffff, #f8fbff);">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#0ea5a6" stop-opacity="0.12"/><stop offset="1" stop-color="#67e8f9" stop-opacity="0.06"/></linearGradient>
+            <style>.t{font-family:Inter,Arial;fill:#0b1b2b;font-weight:700;font-size:13px}.s{font-size:11px;fill:#4b5966}</style>
+          </defs>
+          <rect x="18" y="18" width="964" height="324" rx="12" fill="url(#g1)" opacity="0.06"/>
+          <rect x="40" y="36" width="160" height="76" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="120" y="60" class="t" text-anchor="middle">User</text>
+          <rect x="230" y="28" width="220" height="96" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="340" y="52" class="t" text-anchor="middle">Router</text>
+          <text x="340" y="72" class="s" text-anchor="middle">choose engine (online/local)</text>
+          <rect x="510" y="20" width="180" height="72" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="600" y="44" class="t" text-anchor="middle">Online Adapter</text>
+          <text x="600" y="62" class="s" text-anchor="middle">Groq / cloud</text>
+          <rect x="510" y="116" width="180" height="84" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="600" y="140" class="t" text-anchor="middle">Local Adapter</text>
+          <text x="600" y="158" class="s" text-anchor="middle">llama.cpp • Phi-3 (GGUF)</text>
+          <rect x="760" y="32" width="180" height="168" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="850" y="60" class="t" text-anchor="middle">Flow Lock</text>
+          <text x="850" y="80" class="s" text-anchor="middle">daemon • profiles • XP</text>
+          <rect x="230" y="148" width="220" height="120" rx="10" fill="#fff" stroke="#e6eef2"/>
+          <text x="340" y="172" class="t" text-anchor="middle">Distillation</text>
+          <text x="340" y="192" class="s" text-anchor="middle">Nightly teacher→student • FAISS</text>
+
+          <!-- connectors -->
+          <path d="M200,74 L230,74" stroke="#7dd3fc" stroke-width="2" fill="none" />
+          <path d="M450,74 L510,74" stroke="#7dd3fc" stroke-width="2" fill="none" />
+          <path d="M450,74 L450,176 L510,176" stroke="#7dd3fc" stroke-width="2" fill="none" />
+          <path d="M690,74 L760,74" stroke="#7dd3fc" stroke-width="2" fill="none" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- Router & Engine -->
+    <section id="router" class="panel">
+      <h2>Router & Engine Selection</h2>
+      <p class="muted">`router.py` is the small decision point determining whether a query goes to the online teacher (Groq) or the local model. It uses a tunable policy that considers:</p>
+      <ul class="muted">
+        <li>Presence of API key (config → `online_api_env_var`)</li>
+        <li>Network availability (socket connection test)</li>
+        <li>User preference (e.g. `--offline` flag)</li>
+        <li>Latency and recent errors (auto-fallback)</li>
+      </ul>
+
+      <h3 style="margin-top:12px">Simple policy (pseudo)</h3>
+      <pre class="code">def choose_engine(prefer_online=True):
+    if prefer_online and os.getenv(cfg['online_api_env_var']):
+        if internet_available(): return 'online'
+    return 'local'</pre>
+
+      <p class="muted">Router also logs interactions and writes them to `archetype_logs` for distillation and auditing.</p>
+    </section>
+
+    <!-- Adapters -->
+    <section id="adapters" class="panel">
+      <h2>Adapters</h2>
+      <p class="muted">Adapters translate local function calls into concrete model invocations.</p>
+
+      <h3>Online Adapter</h3>
+      <p class="muted">Wraps calls to Groq or other cloud endpoints. Enforces persona injection and few-shot context. Handles API errors and returns structured teacher responses to be saved for distillation.</p>
+      <pre class="code">// simplified flow
+1. Load persona (SYSTEM prompt)
+2. Attach few-shot examples from distilled_pairs
+3. Call cloud API (chat completion)
+4. Return teacher response (and save pair)</pre>
+
+      <h3>Local Adapter</h3>
+      <p class="muted">Calls `llama.cpp` binaries (`llama-run`, `llama-cli`) with a carefully constructed prompt. Supports retrieval-augmented prompting by prepending top-k examples from local FAISS or `index_texts.json`.</p>
+
+      <pre class="code"># Example: call_local_model(user_text)
+persona = read_persona()
+examples = search_topk(user_text, k=3)
+prompt = build_prompt(persona, examples, user_text)
+out = run_llama_binary(model_path, prompt)</pre>
+
+      <p class="muted">**Performance tip:** ensure `llama.cpp` is built with optimized flags (`-march=native`) and n_threads set appropriately. Prequantized GGUF models (Q4_K) significantly reduce memory and startup time.</p>
+    </section>
+
+    <!-- Distillation -->
+    <section id="distillation" class="panel">
+      <h2>Self-Distillation & Retrieval</h2>
+      <p class="muted">Nightly, ArcheTYPE runs a distillation job that:</p>
+      <ol class="muted">
+        <li>Replays logged user → teacher pairs.</li>
+        <li>Filters high-quality teacher answers.</li>
+        <li>Saves supervised pairs to `distilled_dataset/supervised_pairs.jsonl`</li>
+        <li>Rebuilds a FAISS index (if available) and `index_texts.json` for retrieval</li>
+      </ol>
+
+      <h3 style="margin-top:12px">Why this matters</h3>
+      <p class="muted">The online teacher is higher-quality but requires connectivity and costs. Distillation lets the offline brain learn the teacher's best responses to your common requests, improving raw offline performance and privacy.</p>
+
+      <h3 style="margin-top:12px">Files</h3>
+      <table>
+        <thead><tr><th>Path</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>distilled_dataset/supervised_pairs.jsonl</code></td><td>Line-delimited prompt→response pairs from teacher</td></tr>
+          <tr><td><code>distilled_dataset/index_texts.json</code></td><td>Plain texts used for retrieval and few-shot prepending</td></tr>
+          <tr><td><code>faiss.index</code></td><td>FAISS index file for fast vector search (optional)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Flow Lock -->
+    <section id="flowlock" class="panel">
+      <h2>Flow Lock — profiles, scoring, and math</h2>
+      <p class="muted">Flow Lock is the enforcement and gamification layer. It watches processes, idle time, and grants/penalizes the user with <strong>score</strong> and <strong>XP</strong>. Score reflects daily alignment; XP reflects long-term progression.</p>
+
+      <h3>Profiles</h3>
+      <p class="muted">Profiles live under <code>flow_lock/profiles/</code> as JSON files. A canonical `coding.json` example:</p>
+
+      <pre class="code">{
+  "name": "coding",
+  "blacklist": ["discord", "spotify", "brave", "youtube"],
+  "whitelist": ["code", "pycharm", "terminal", "firefox"],
+  "score_reward": 5,
+  "score_reward_mult": 1.0,
+  "score_penalty": 10,
+  "score_penalty_mult": 1.0,
+  "xp_mult": 1.0,
+  "idle_limit_minutes": 8
+}</pre>
+
+      <h3 style="margin-top:12px">Score vs XP — design</h3>
+      <p class="muted"><strong>Score (daily_score)</strong> is reset daily and measures short-term discipline (e.g., minutes of focused time). <strong>XP (total_xp)</strong> accumulates and unlocks levels across days. They use related but distinct update functions so short sessions reward score quickly, while XP requires sustained behavior (streak bonuses).</p>
+
+      <h3 style="margin-top:12px">Algorithm (reference)</h3>
+      <pre class="code"># when reward event occurs (e.g., every CHECK_INTERVAL seconds)
+score_delta = base_reward * (CHECK_INTERVAL / 60) * reward_mult
+
+# streak multiplier for XP (example)
+if streak_seconds < 300: streak_mult = 1.0
+elif streak_seconds < 1200: streak_mult = 1.2
+elif streak_seconds < 3600: streak_mult = 1.5
+else: streak_mult = 2.0
+
+xp_gain = score_delta * xp_mult * streak_mult
+total_xp = max(0, total_xp + xp_gain)
+
+# level formula (tunable)
+level = int((total_xp ** 0.6) * 1.8)</pre>
+
+      <p class="muted">You can tune exponents and multipliers in code — they are intentionally configurable to find a motivating curve.</p>
+
+      <h3 style="margin-top:12px">Daily reset</h3>
+      <p class="muted">When `last_score_date != today`, the daemon zeroes `daily_score` and preserves `total_xp`. This guarantees fresh daily goals and prevents score carryover.</p>
+
+      <h3 style="margin-top:12px">Daemon behavior</h3>
+      <ol class="muted">
+        <li>If `lock_enabled` is false: sleep.</li>
+        <li>Check idle via KDE/DBus or `xprintidle`. If idle beyond profile limit: send correction and apply penalty.</li>
+        <li>Detect forbidden processes (blacklist) and kill them, apply penalty.</li>
+        <li>On reward tick: add score and XP according to profile multipliers.</li>
+        <li>Notify every configured interval with current Level / XP / Daily Score.</li>
+      </ol>
+
+    </section>
+
+    <!-- Intent Engine -->
+    <section id="intent" class="panel">
+      <h2>Intent Engine & Command Mode</h2>
+      <p class="muted">ArcheTYPE parses natural language commands into structured intents and executes safe, auditable actions. Example user input:</p>
+      <pre class="code">archetype prepare coding mode
+archetype lock on
+archetype summarize last 3 commits</pre>
+
+      <h3 style="margin-top:12px">Intent parsing flow</h3>
+      <ol class="muted">
+        <li>User command → `archetype_intent.py`</li>
+        <li>`intent_parser` maps the text to an intent (e.g. `coding`)</li>
+        <li>`intent_loader` loads the JSON intent map for actions</li>
+        <li>`intent_executor` runs actions (exec commands, tiling, notifications)</li>
+      </ol>
+
+      <h3 style="margin-top:12px">Action types</h3>
+      <table>
+        <thead><tr><th>type</th><th>description</th></tr></thead>
+        <tbody>
+          <tr><td>exec</td><td>Run shell commands (must be whitelisted in intent)</td></tr>
+          <tr><td>layout</td><td>Apply KWin tiling layout via saved script</td></tr>
+          <tr><td>notify</td><td>Desktop message using <code>notify-send</code></td></tr>
+          <tr><td>spawn</td><td>Open list of apps/urls in a preset order</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top:12px">Secure example: prepare coding mode</h3>
+      <pre class="code">{
+  "id": "coding",
+  "description": "Prepare a coding workspace",
+  "actions": [
+    {"type": "spawn", "cmd": "alacritty --class terminal -e nvim"},
+    {"type": "spawn", "cmd": "flatpak run com.jetbrains.PyCharm"},
+    {"type": "exec", "cmd": "xdg-open 'https://github.com/myproject'"},
+    {"type": "layout", "script": "tiling_code"}
+  ],
+  "allowed": true
+}</pre>
+
+      <p class="muted">All actions are defined locally under `engine/actions/` and require explicit profile permissions. Remote triggers are disabled by default.</p>
+    </section>
+
+    <!-- Install -->
+    <section id="install" class="panel">
+      <h2>Install, dependencies & systemd</h2>
+      <p class="muted">Recommended for Debian/KDE (Wayland) — set up a Python venv and install required CLI tools.</p>
+
+      <h3>System packages</h3>
+      <pre class="code">sudo apt update
+sudo apt install build-essential cmake python3-venv python3-dev libssl-dev pkg-config \
+notify-send xprintidle dbus-user-session dbus-x11</pre>
+
+      <h3>Python environment</h3>
+      <pre class="code">cd ~/ArcheTYPE
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+# If you use dotenv, ensure it's installed in the same venv:
+pip install python-dotenv</pre>
+
+      <h3>llama.cpp (local LLM)</h3>
+      <p class="muted">Follow llama.cpp docs (CMake) — build with CPU optimizations. Copy GGUF model into `~/ArcheTYPE/models/` and set it in `config.json`.</p>
+
+      <h3 style="margin-top:12px">Systemd unit (user)</h3>
+      <pre class="code"># ~/.config/systemd/user/flow_lock.service
+[Unit]
+Description=ArcheTYPE Flow Lock Daemon
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/USERNAME/ArcheTYPE/venv/bin/python3 /home/USERNAME/ArcheTYPE/flow_lock/lock_daemon.py
+KillMode=process
+Restart=on-failure
+WorkingDirectory=/home/USERNAME/ArcheTYPE
+
+[Install]
+WantedBy=default.target</pre>
+
+      <p class="muted">Enable and start</p>
+      <pre class="code">systemctl --user daemon-reload
+systemctl --user enable --now flow_lock.service
+journalctl --user -u flow_lock.service -f</pre>
+    </section>
+
+    <!-- Security -->
+    <section id="security" class="panel">
+      <h2>Security & Privacy</h2>
+      <p class="muted">ArcheTYPE is designed to keep private data local by default. Distillation is performed locally and you control whether teacher data is stored. Recommended practices:</p>
+      <ul class="muted">
+        <li>Keep your venv and system packages updated</li>
+        <li>Protect `config.json` and `persona` files with proper filesystem permissions</li>
+        <li>DO NOT enable remote triggers unless you audit `engine/actions/`</li>
+        <li>Rotate online API keys and set rate limits</li>
+      </ul>
+    </section>
+
+    <!-- Extending -->
+    <section id="extending" class="panel">
+      <h2>Extending ArcheTYPE</h2>
+      <p class="muted">Add adapters, intents, or new profiles easily:</p>
+      <h4>1) Add a new profile</h4>
+      <pre class="code"># create ~/ArcheTYPE/flow_lock/profiles/writing.json
+{
+  "name":"writing",
+  "blacklist":["discord","youtube"],
+  "whitelist":["libreoffice","focuswriter","firefox"],
+  "score_reward":4,
+  "score_penalty":12,
+  "idle_limit_minutes":12
+}</pre>
+
+      <h4 style="margin-top:8px">2) New intent</h4>
+      <pre class="code"># add engine/intents/meeting.json with actions (see Intent Engine section)</pre>
+
+      <h4 style="margin-top:8px">3) Adapter</h4>
+      <p class="muted">Create `adapters/new_provider.py` implementing `call_model(user_text, **kwargs)` and wire it in `router.py`.</p>
+    </section>
+
+    <!-- Debugging -->
+    <section id="troubleshoot" class="panel">
+      <h2>Debugging & Troubleshooting</h2>
+      <p class="muted">Common issues and fixes:</p>
+
+      <h4>1) Daemon failing with ModuleNotFoundError for dotenv</h4>
+      <pre class="code"># Activate venv in systemd ExecStart or install python-dotenv in system Python
+ExecStart=/home/USER/ArcheTYPE/venv/bin/python3 /home/USER/ArcheTYPE/flow_lock/lock_daemon.py
+# or
+pip install python-dotenv</pre>
+
+      <h4>2) llama-run binary not found</h4>
+      <pre class="code">cd ~/llama.cpp
+cmake -S . -B build
+cmake --build build -j$(nproc)
+# ensure BINARY_CANDIDATES in adapters/local_adapter.py points to build/bin/llama-run</pre>
+
+      <h4>3) network unreachable (online failures)</h4>
+      <p class="muted">Router falls back to local. Check connectivity and API key presence: `echo $GROQ_API_KEY`</p>
+
+      <h4>4) Flow score not updating</h4>
+      <pre class="code"># Ensure flow_lock daemon is running as the same user:
+systemctl --user status flow_lock.service
+# Logs:
+journalctl --user -u flow_lock.service -n 200 --no-pager</pre>
+
+      <h4 style="margin-top:10px">Developer tips</h4>
+      <ul class="muted">
+        <li>Run `python3 -m pdb router.py` to step into engine selection</li>
+        <li>Tail `distilled_dataset/supervised_pairs.jsonl` to inspect teacher saves</li>
+      </ul>
+    </section>
+
+    <!-- Changelog -->
+    <section id="changelog" class="panel">
+      <h2>Change log & Nightly Jobs</h2>
+      <p class="muted">ArcheTYPE uses a systemd timer for nightly distillation. The timer file `archetype-distill.timer` triggers `archetype-distill.service` which runs `distill.py` and `retriever.py`.</p>
+      <pre class="code"># Example timer:
+[Unit]
+Description=ArcheTYPE nightly distill
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target</pre>
+    </section>
+
+    <footer>
+      <div class="muted">ArcheTYPE — the shadow that sharpens you. For questions or contributions, open an issue in the repo or ping the local logs under <code>~/ArcheTYPE/archetype_logs</code>.</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // small helpers: set updated date and enable search+toc navigation
+  document.getElementById('updated').textContent = new Date().toISOString().slice(0,10);
+
+  // smooth scrolling for toc
+  document.querySelectorAll('a.link').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // basic search by heading text
+  const input = document.getElementById('search');
+  input.addEventListener('input', ()=>{
+    const q = input.value.trim().toLowerCase();
+    const links = document.querySelectorAll('#toc a.link');
+    links.forEach(l=>{
+      const txt = l.textContent.toLowerCase();
+      l.style.display = txt.includes(q) ? 'block' : (q ? 'none' : 'block');
+    });
+  });
+</script>
+</body>
+</html>

@@ -103,12 +103,11 @@ def call_local_model(user_text, model_key="local_fast"):
     if not os.path.exists(model_path):
         return f"[local adapter] Model not found: {model_path}"
 
-    # Load persona
-    persona_src = os.path.expanduser(CFG.get("persona_source"))
-    try:
-        persona = open(persona_src, "r", encoding="utf-8").read()
-    except Exception as e:
-        persona = f"ArcheTYPE persona missing: {e}"
+    persona = (
+    "ArcheTYPE — Shadow ascetic AI. Precision. Discipline. "
+    "Output must contain DIAGNOSIS / ACTION / METRIC under 60 words."
+    )
+
 
     # Retrieval
     examples = search_topk(user_text, k=3)
@@ -119,7 +118,7 @@ def call_local_model(user_text, model_key="local_fast"):
     # Run llama-run
     cmd = (
         f"{shlex.quote(str(BINARY))} "
-        f"--threads 10"
+        f"--threads 6 "
         f"--temp 0.2 "
         f"{shlex.quote(model_path)} "
         f"{shlex.quote(prompt)}"

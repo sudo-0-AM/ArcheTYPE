@@ -7,6 +7,7 @@ import time
 import socket
 from dotenv import load_dotenv
 from pathlib import Path
+from datetime import datetime
 
 from adapters.online_adapter import call_online_model
 from adapters.local_adapter import call_local_model
@@ -16,9 +17,47 @@ from engine.comand_mode import try_parse_command
 load_dotenv()
 CFG = json.load(open("/home/piyush/ArcheTYPE/config.json"))
 
-# -------------------------------------------------------
-# INTERNET CHECK (NO PING — THIS ALWAYS WORKS)
-# -------------------------------------------------------
+SOUL_PATH = "/home/piyush/ArcheTYPE/ascetic_soul.jaon"
+
+def load_soul():
+    try:
+        return json.load(open(SOUL_PATH, "r", encoding="utf-8"))
+    except:
+        return {}
+
+def apply_soul_tone(user_text, soul):
+    text = user_text.lower()
+
+    if "shadow" in text:
+        return soul["dialogue"]["enter_shadow"]
+
+    if "why" in text or "reason" in text:
+        return soul["dialogue"]["seek_truth"]
+
+    if "stuck" in text:
+        return "Strip the confusion. What is the smallest precise step you can take?"
+
+    if "tired" in text or "low" in text:
+        return "Withdraw from noise. Still yourself. Focus on the smallest next action."
+
+    return None
+
+def apply_ritual(user_text, soul):
+    hour = datetime.now().hour
+    rituals = soul.get("rituals", {})
+
+    if hour == 6:
+        return rituals["morning"]["phrase"]
+
+    if hour == 12:
+        return rituals["midday"]["phrase"]
+
+    if hour == 22:
+        return rituals["night"]["phrase"]
+
+    return None
+
+
 def _internet_available():
     try:
         socket.create_connection(("api.groq.com", 443), timeout=1)
@@ -27,44 +66,41 @@ def _internet_available():
         return False
 
 
-# -------------------------------------------------------
-# ENGINE SELECTION
-# -------------------------------------------------------
 def choose_engine():
     api_key_name = CFG.get("online_api_env_var", "")
     api_key = os.getenv(api_key_name)
 
-    # If Groq key isn't present → local only
     if not api_key:
         return "local"
-
-    # If internet works → use teacher model
     if _internet_available():
         return "online"
-
-    # Otherwise → offline LLM
     return "local"
 
 
-# -------------------------------------------------------
-# MAIN EXECUTION LOGIC
-# -------------------------------------------------------
-def archetype_respond(user_text,force_offline=False, local_model="local_fast"):
-    
-    # ----------------------------------------
-    # COMMAND MODE: intercept special commands
-    # ----------------------------------------
+def archetype_respond(user_text, force_offline=False, local_model="local_fast"):
+
+    # Command Mode
     cmd = try_parse_command(user_text)
     if cmd:
         return cmd
-    
-    # Normal online/offline routing
-    # ----------------------------------------
-    if force_offline:
-        engine = "local"
-    else:
-        engine = choose_engine()
 
+    # ----------------------------------------
+    # SOUL LAYER (Ascetic tone + rituals)
+    # ----------------------------------------
+    soul = load_soul()
+
+    ritual_msg = apply_ritual(user_text, soul)
+    if ritual_msg:
+        user_text = ritual_msg + " " + user_text
+
+    tone_override = apply_soul_tone(user_text, soul)
+    if tone_override:
+        user_text = tone_override
+
+    # ----------------------------------------
+    # ENGINE SELECT
+    # ----------------------------------------
+    engine = "local" if force_offline else choose_engine()
     timestamp = int(time.time())
 
     if engine == "online":
@@ -77,7 +113,7 @@ def archetype_respond(user_text,force_offline=False, local_model="local_fast"):
     else:
         resp = call_local_model(user_text, model_key=local_model)
 
-    # Log response
+    # Log
     log_interaction({
         "ts": timestamp,
         "engine": engine,
@@ -88,9 +124,6 @@ def archetype_respond(user_text,force_offline=False, local_model="local_fast"):
     return resp
 
 
-# -------------------------------------------------------
-# CLI
-# -------------------------------------------------------
 if __name__ == "__main__":
     import sys
     user_text = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else input("You: ")

@@ -1,0 +1,2 @@
+{"prompt": "Classify the following user instruction into ONLY an intent label.\nAvailable intents: coding, research, deep_work, linux, custom.\nUser: prepare light mode\nReturn ONLY: coding / research / deep_work / linux / custom\n(no punctuation, no sentences)", "response": "linux"}
+{"prompt": "Classify the following user instruction into ONLY an intent label.\nAvailable intents: coding, research, deep_work, linux, custom.\nUser: prepare coding mode\nReturn ONLY: coding / research / deep_work / linux / custom\n(no punctuation, no sentences)", "response": "coding"}

@@ -9,11 +9,11 @@ def call_online_model(user_text):
         return "[online adapter] GROQ_API_KEY missing"
 
     # Load persona
-    try:
-        persona_path = os.path.expanduser(CFG['persona_source'])
-        persona = open(persona_path, "r", encoding="utf-8").read()
-    except Exception as e:
-        return f"[online adapter] persona file error: {e}"
+    persona = (
+    "ArcheTYPE — Shadow ascetic AI. Precision. Discipline. "
+    "Output must contain DIAGNOSIS / ACTION / METRIC under 60 words."
+    )
+
 
     # System + user messages
     messages = [

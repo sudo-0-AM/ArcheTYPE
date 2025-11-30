@@ -1,1 +1,0 @@
-{"ts": 1764441188, "engine": "online", "user": "Classify the following user instruction into ONLY an intent label.\nAvailable intents: coding, research, deep_work, linux, custom.\nUser: prepare coding mode\nReturn ONLY: coding / research / deep_work / linux / custom\n(no punctuation, no sentences)", "response": "coding"}

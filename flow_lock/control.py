@@ -72,6 +72,17 @@ def set_lock(enabled: bool):
     state["lock_enabled"] = bool(enabled)
     write_state(state)
     log(f"Flow Lock set to {'ON' if enabled else 'OFF'}")
+    
+    if enabled:
+        # Force venv Python
+        VENV_PY = os.path.expanduser("~/ArcheTYPE/venv/bin/python3")
+        INTENT = os.path.expanduser("~/ArcheTYPE/archetype_intent.py")
+
+        try:
+            subprocess.Popen([VENV_PY, INTENT, f"prepare {state['current_profile']} mode"])
+        except Exception as e:
+            log(f"[intent error] {e}")
+            
     return state
 
 # ---- Public API ----
@@ -81,14 +92,16 @@ def set_profile(profile_name: str):
     write_state(state)
     log(f"Profile changed -> {profile_name}")
 
-    # Force venv Python
-    VENV_PY = os.path.expanduser("~/ArcheTYPE/venv/bin/python3")
-    INTENT = os.path.expanduser("~/ArcheTYPE/archetype_intent.py")
+    enabled = state['lock_enabled']
+    if enabled:
+        # Force venv Python
+        VENV_PY = os.path.expanduser("~/ArcheTYPE/venv/bin/python3")
+        INTENT = os.path.expanduser("~/ArcheTYPE/archetype_intent.py")
 
-    try:
-        subprocess.Popen([VENV_PY, INTENT, f"prepare {profile_name} mode"])
-    except Exception as e:
-        log(f"[intent error] {e}")
+        try:
+            subprocess.Popen([VENV_PY, INTENT, f"prepare {profile_name} mode"])
+        except Exception as e:
+            log(f"[intent error] {e}")
 
     return state
 
