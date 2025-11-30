@@ -11,7 +11,7 @@ __pycache__/
 .mypy_cache/
 .pytest_cache/
 *.sqlite3
-
+llama.cpp/
 # =========================================
 # VIRTUAL ENVIRONMENTS (Highly Recommended)
 # =========================================
