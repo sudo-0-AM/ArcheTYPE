@@ -52,8 +52,8 @@ def try_parse_command(text: str):
         return str(st)
 
     # score dashboard
-    if t in ("flow score", "score", "show score", "archtype score"):
+    if t in ("flow score", "show score"):
         return score_dashboard()
-
+    
 
     return None

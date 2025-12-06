@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ~/ArcheTYPE/scripts/nightly_distill.sh
-# Nightly distillation script with correct persona path
+# Nightly distillation (safe, silent, FAISS-aware)
 
 set -euo pipefail
 
@@ -11,60 +11,59 @@ RUN_LOG="$LOG_DIR/nightly-distill-$(date +%F).log"
 LOCKFILE="/tmp/archetype_nightly_distill.lock"
 DISTILL_PY="$PROJ/distill.py"
 RETRIEVER_PY="$PROJ/retriever.py"
-
-# Correct persona path (your actual file)
 PERSONA_PATH="$PROJ/system_prompt.txt"
+FAISS_DIR="$(dirname $(readlink -f $PROJ/faiss.index))"
 
 mkdir -p "$LOG_DIR"
+mkdir -p "$FAISS_DIR"
 
-# Lockfile for safety
+# ---- LOCKFILE ----
 if [ -e "$LOCKFILE" ]; then
-  echo "$(date -Iseconds) - another run is in progress. Exiting." >> "$RUN_LOG"
+  echo "$(date -Iseconds) - Another distill run already active. Skipping." >> "$RUN_LOG"
   exit 0
 fi
 
 trap 'rm -f "$LOCKFILE"' EXIT
 touch "$LOCKFILE"
 
-echo "=== ArcheTYPE nightly distill started: $(date -Iseconds) ===" >> "$RUN_LOG"
+echo "=== NIGHTLY DISTILL START: $(date -Iseconds) ===" >> "$RUN_LOG"
 
-# Health checks
-if [ ! -d "$PROJ" ]; then
-  echo "Project dir missing: $PROJ" >> "$RUN_LOG"
-  exit 1
-fi
+# ---- HEALTH CHECKS ----
+for f in "$DISTILL_PY" "$RETRIEVER_PY" "$PERSONA_PATH"; do
+  if [ ! -f "$f" ]; then
+    echo "[WARN] Missing file: $f" >> "$RUN_LOG"
+  fi
+done
 
-if [ ! -f "$DISTILL_PY" ]; then
-  echo "distill.py not found at $DISTILL_PY" >> "$RUN_LOG"
-  exit 1
-fi
-
-if [ ! -f "$RETRIEVER_PY" ]; then
-  echo "retriever.py not found at $RETRIEVER_PY" >> "$RUN_LOG"
-  exit 1
-fi
-
-# Activate venv if available
+# ---- VENV ----
 if [ -d "$VENV" ]; then
-  source "$VENV/bin/activate"
+  # avoid printing "deactivate" errors
+  source "$VENV/bin/activate" >/dev/null 2>&1 || true
 else
-  echo "Virtualenv not found at $VENV" >> "$RUN_LOG"
+  echo "[WARN] venv missing, continuing with system python" >> "$RUN_LOG"
 fi
 
-# Persona debug check (now correct)
-if [ -f "$PERSONA_PATH" ]; then
-  echo "Persona present at $PERSONA_PATH" >> "$RUN_LOG"
-else
-  echo "WARNING: Persona NOT found at $PERSONA_PATH" >> "$RUN_LOG"
+
+# ---- RUN DISTILL ----
+echo "[INFO] Running distill.py..." >> "$RUN_LOG"
+cd "$PROJ"
+
+python3 "$DISTILL_PY" >> "$RUN_LOG" 2>&1 || echo "[ERROR] distill failed!" >> "$RUN_LOG"
+
+# If no pairs were saved, skip retriever
+PAIR_FILE="$PROJ/distilled_dataset/supervised_pairs.jsonl"
+
+if [ ! -s "$PAIR_FILE" ]; then
+  echo "[WARN] No distilled pairs found, skipping FAISS rebuild." >> "$RUN_LOG"
+  echo "=== NIGHTLY DISTILL END: $(date -Iseconds) ===" >> "$RUN_LOG"
+  exit 0
 fi
 
-# Run distill
-echo "Running distill.py ..." >> "$RUN_LOG"
-( cd "$PROJ" && python3 "$DISTILL_PY" >> "$RUN_LOG" 2>&1 )
+# ---- RUN RETRIEVER ----
+echo "[INFO] Running retriever.py (FAISS rebuild)..." >> "$RUN_LOG"
 
-# Run retriever
-echo "Running retriever.py ..." >> "$RUN_LOG"
-( cd "$PROJ" && python3 "$RETRIEVER_PY" >> "$RUN_LOG" 2>&1 )
+python3 "$RETRIEVER_PY" >> "$RUN_LOG" 2>&1 || echo "[ERROR] retriever failed!" >> "$RUN_LOG"
 
-echo "=== ArcheTYPE nightly distill finished: $(date -Iseconds) ===" >> "$RUN_LOG"
+
+echo "=== NIGHTLY DISTILL END: $(date -Iseconds) ===" >> "$RUN_LOG"
 echo "" >> "$RUN_LOG"

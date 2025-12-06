@@ -1,18 +1,25 @@
 from router import archetype_respond
 
-def parse_intent(user_text):
-    """
-    Ask ArcheTYPE to classify a user instruction into an intent label.
-    """
+def parse_intent(text):
+    prompt = f"""
+You are the ArcheTYPE Intent Mapper.
+Your ONLY job is to read the user command and output the intent id.
 
-    prompt = f"Classify the following user instruction into ONLY an intent label.\nAvailable intents: coding, research, deep_work, linux, custom.\nUser: {user_text}\nReturn ONLY: coding / research / deep_work / linux / custom\n(no punctuation, no sentences)"
+Valid intents: coding, study.
 
-    # Router now auto-detects online/offline
-    out = archetype_respond(prompt)
-    out = out.strip().lower()
+RULES:
+- Output EXACTLY one word: the intent id.
+- Do NOT output diagnosis/action/metric.
+- Do NOT roleplay.
+- Do NOT explain.
+- Only output raw intent.
+User command: "{text}"
+"""
 
-    # Cleanup
+    out = archetype_respond(prompt).strip().lower()
+
+    # sanitize
     out = out.replace("intent:", "").strip()
-    out = out.replace(".", "").strip()
 
     return out if out else None
+

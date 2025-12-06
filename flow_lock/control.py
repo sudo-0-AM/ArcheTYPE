@@ -20,7 +20,6 @@ from datetime import datetime
 
 BASE = os.path.expanduser("~/ArcheTYPE/flow_lock")
 STATE_PATH = os.path.join(BASE, "state.json")
-LOG = os.path.join(BASE, "control.log")
 
 def _ensure_dirs():
     os.makedirs(BASE, exist_ok=True)
@@ -61,10 +60,8 @@ def write_state(state):
         json.dump(state, fh, indent=2)
 
 def log(msg):
-    ts = datetime.now().isoformat()
-    with open(LOG, "a", encoding="utf-8") as fh:
-        fh.write(f"{ts} {msg}\n")
-    print(msg)
+    ts = datetime.now()
+    print(f"{ts} <> {msg}")
 
 # ---- Public API ----
 def set_lock(enabled: bool):
@@ -126,26 +123,29 @@ def main(argv):
         _usage()
 
     sub = argv[1] if len(argv) > 1 else None
+    
     if sub in ("on", "enable"):
         st = set_lock(True)
-        print("OK")
+
     elif sub in ("off", "disable"):
         st = set_lock(False)
-        print("OK")
+
     elif sub == "status":
         st = get_status()
         print(json.dumps(st, indent=2))
+
     elif sub == "profile":
         if len(argv) < 3:
             print("profile <name>")
             return
         name = argv[2]
         st = set_profile(name)
-        print("OK")
+
     elif sub == "score":
         from score_dashboard import score_dashboard
         print(score_dashboard())
         return
+    
     else:
         _usage()
 
